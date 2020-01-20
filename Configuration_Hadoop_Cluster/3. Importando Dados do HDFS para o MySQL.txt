@@ -1,0 +1,89 @@
+Importando Dados do HDFS para o MySQL utilizando Scoop
+
+	- Start MySQL Service:
+		- sudo systemctl start mysqld
+		
+	- Check Status MySQL:
+		- sudo systemctl status mysqld
+	
+	- Acess MySQL:
+		$ mysql -u root -p
+		password: Mysql@11
+	 
+	
+	- CMD Criar estrutura MYSQL para teste:
+	
+		- create database testedb;	
+		- use testedb;	
+		- create table empregados (username varchar(30), password varchar(30));
+		- insert into empregados (username, password) values ('Alan Turing', 'dsahadoop');
+		
+	- Importar o registro inserido na tabela empregados para o HDFS utilizando Scoop:
+		- Scoop depende das bibliotecas do Hadoop;
+		- Scoop utlizada JDBC para se conectar;
+		- Scoop não é tão rápido mas é free; (Pentaho é outra ferramenta de ETL)
+		
+		- É necessário realizar o Download do JDBC que deseja utilizar e configurar;
+		
+			- Download: https://dev.mysql.com/downloads/connector/j/   (Realizar o download da mesma versão do MySQL que será utilizado);
+				- Escolher o Plataform independent
+				
+			- Check Version: 
+				$ mysql --version			
+				
+			- Realizar o unzip do arquivo zip:
+				$ unzip <file_>				
+				
+			- Acessar o diretório criado e copiar o arquivo .jar para o diretório Lib do Scoop:
+				$ cp <file_name.jar> /opt/sqoop/lib
+				
+			- Check o arquivo:
+				$ cd /opt/sqoop/lib
+				$ ls -la
+	- Command Help:
+		$ sqoop help
+	
+	- Sqoop Version:
+		$ sqoop version
+
+	- Comandos Sqoop para listar bancos de dados no MySQL:
+		$ sqoop list-databases --connect jdbc:mysql://localhost:3306/ --username root -P
+
+		- A mensagem de erro "Java.lang.NoClassDefFoundError: org/apache/commons/lang/StringUtils" significa que o sqoop versão 1.4.7 não é compativel com a versão do Hadoop (Ocorre com Hadoop 3.x.x);
+			- O motivo da incompatibilidade das versões é a falta de bibliotecas do Hadoop dentro das libs da versão 1.4.7 do sqoop;
+			- Local onde pode ser encontrado a Lib para Download: https://github.com/dsacademybr/Libs  Arquivo: commons-lang-2.6-bin.zip
+				- Botão Direito Download e copia o Link;
+				- Acessa o terminal:
+					$ cd Download
+					$ wget https://github.com/dsacademybr/Libs/raw/master/commons-lang-2.6-bin.zip
+					$ Unzip <file_name>
+					$ cd <file_directory>
+					$ cp <file_name.jar> <Directory_Sqoop_lib>
+						$ cp commons-lang-2.6.jar /opt/sqoop/lib
+			- Executar o comando novamente
+		
+		- Caso seja apresentado o erro de TimeZone utilizar o comando:
+			$ sqoop list-databases --connect jdbc:mysql://localhost:3306/?serverTimezone=UTC --username root -P
+
+	- Comando Sqoop para importar dados do MySQL para o HDFS
+		- Hadoop e YARN Devem estar Inicializados:
+			- Hadoop: start-dfs.sh
+			- Yarn: start-yarn.sh
+	
+		$ sqoop import --connect jdbc:mysql://localhost:3306/testedb?serverTimezone=UTC --username root --password Mysql@11 --table empregados --m 1
+			--m 1 -> Utilizando apenas 1 canal de importação
+		
+		- Os dados são importados para o diretório: 
+			$ hdfs dfs -ls /user/hadoop/empregados
+		
+	- Carregando os dados o HDFS para o S.O.:
+		$ hdfs dfs -get /user/hadoop/empregados/part-m-00000 
+			- O arquivo será extraido para o diretório local que está sendo executado o comando;
+			
+		$ gedit part-m-00000
+		
+		
+		
+			
+			
+		

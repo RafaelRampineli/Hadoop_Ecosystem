@@ -1,0 +1,25 @@
+Instalando e Configurando Apache Mahout no Cluster Hadoop:
+
+	- Download Apache Mahout Versão: 0.13.0:
+		http://mahout.apache.org/
+		http://www.apache.org/dist/mahout/0.13.0/
+		
+	- Descompactar o arquivo:
+		$ cd Downlaod
+		$ tar -xvf tar -xvf apache-mahout-distribution-0.13.0.tar.gz 
+	
+	- Mover o Diretório criado em Downloads para /opt/mahout
+		$ sudo mv apache-mahout-distribution-0.13.0 /opt/mahout
+
+	- Configurar Variável de Ambiente:
+		$ gedit .bashrc
+		
+		Adiciona o seguinte conteúdo:
+			# Mahout
+			export MAHOUT_HOME=opt/mahout
+			export PATH=$PATH:$MAHOUT_HOME/bin
+
+		$ source .bashrc
+		
+	- Testar a configuração:
+		$ mahout

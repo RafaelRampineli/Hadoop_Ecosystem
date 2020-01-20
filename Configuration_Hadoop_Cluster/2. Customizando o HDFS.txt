@@ -1,0 +1,32 @@
+Customizando o HDFS
+
+- stop-dfs.sh
+	
+- Configurar/Alterar o diretório onde os dados e metadados do Hadoop são armazenados:
+	- Cria os diretórios abaixo
+		$ mkdir /opt/hadoop/dfs
+		$ mkdir /opt/hadoop/dfs/data -> Guarda os metadados dos DataNodes
+		$ mkdir /opt/hadoop/dfs/namespace_logs  -> Guarda os metadados do NameNodes
+
+		* Quando configurado um multi-cluster-hadoop (1 Maquina com NameNode e N Maquinas com DataNodes), os diretórios seriam criados em máquinas diferentes;
+
+	- Editar o arquivo $HADOOP_HOME/etc/hadoop/hdfs-site.xml e adicionar as linhas:
+
+		<property>
+		  <name>dfs.namenode.name.dir</name>
+		  <value>/opt/hadoop/dfs/namespace_logs</value>
+		</property>
+		<property>
+		  <name>dfs.datanode.data.dir</name>
+		  <value>/opt/hadoop/dfs/data</value>
+		</property>
+		
+	- Limpa os arquivos do diretório /tmp/
+		$ sudo rm -rf *
+		
+	- Formata o NameNode:
+		$ hdfs namenode -format
+		
+	- Start dos Serviços:
+		$ start-dfs.sh
+		$ start-yarn.sh

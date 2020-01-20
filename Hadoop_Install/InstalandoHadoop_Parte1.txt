@@ -1,0 +1,350 @@
+Instalando o Ecossistema Hadoop - Parte 1
+
+- Principais distribuições Hadoop: Cloudera e HortonWorks
+	- Somente Máquinas com 64 bits;
+	- Requer Mínimo 8GB de Ram;
+
+- Atividades:
+	- Parte 1: 
+				- Criar uma VM;
+				- Instalar Linux;
+				- Instalar utilitários (Java, ssh, ferramentas);
+				- Instalar MySQL;
+	
+	- Parte 2:
+				- Instalar Hadoop;
+				- Configurar HDFS e MapReduce;
+				- Executar Job MapReduce no HDFS;
+				- Instalar e configurar Zookeeper - Serviço para gerenciar ambiente distribuidos;
+				- Instalar e configurar HBase - DB Distribuido NOSQL;
+				- Instalar e configurar Hive - DW do Hadoop;
+				- Instalar e configurar Pig - Camada de programação que roda sobre o MapReduce;
+				- Instalar e configurar Sqoop - Ingestão de dados HDFS -> RDBMS;
+				- Instalar e configurar Spark;
+				- Instalar e configurar Flume - Ingestão de dados (Bastante util para grande qtd de log data);
+
+				- Instalar e configurar VM Cloudera;
+				- Instalar e configurar VM HortonWorks;
+				- Instalar e configurar Hadoop com Docker;
+				
+- Por que cientista de Dados devem aprender Hadoop?
+	- Hadoop é Open Source;
+	- Hadoop oferece framework mais completo para armazenamento e processamento de big data;
+	- Oracle fornece soluções Big Data Analytics para Hadoop;
+	- Microsoft oferece soluções corportativas em cloud para hadoop;
+	- Hadoop é mantido pela Apache Foundation mas recebe contribuições de empresas como Google, Facebook e Yahoo;
+	- Cientista de Dados deve conhecer o paradigma de processamento mapreduce;
+	- Hadoop é uma das skills mais proceduras em Cientista de dados;
+	- Falta profissionais no mercado;
+	- Utilizado pelas maiores empresas do mundo;
+	- IoT vai revolucionar o bigdata e onde salvar?
+
+- Arquitetura:
+	- Master Node:
+		- NameNode: Gerencia o HDFS;
+		- JobTracker: Gerencia os Jobs do MapReduce;
+		- SecondaryNode: Backup NameNode;
+		
+	- Worker Node:
+		- DataNode: Armazena e recupera dados do HDFS;
+		- TaskTracker: Executa as operações de MapReduce;
+
+	- o Client faz um request na máquina Master Node que então aloca Workers nodes para realizar as operações solicitadas pelo Client;
+	
+- Modos de Execução Hadoop:
+	
+	- Modo Local (Standalone);
+		- Padrão Hadoop;
+		- Utilizado durante o desenvolvimento;
+	- Modo Pseudo-Distribuído (Pseudo-Distributed);
+		- Configura como cluster, poréma execução é feita em uma única máquina;
+		- Simula um cluster;		
+	- Modo Totalmente-Distribuído (Fully-Distributed);
+		- Configura um cluster em várias máquinas;
+		- Configura secondarynode;
+	
+	- Arquivos que necessitam ser modificados para realizar configurações do modo de execução do Hadoop:
+		- core-site.xml
+		- hdfs-site.xml
+		- mapred-site.xml
+
+- criação do ambiente virtual:
+	- Download Virtual Box;
+	- CentOS 7.6; (melhor opção para servidores)
+		- http://mirror.globo.com/centos/7.7.1908/isos/x86_64/
+		
+		user/pw: user/1
+		root: root/1
+		hadoop: hadoop/1
+		
+		CMD Para instalar programas no CentOS: $ yum install <program>
+
+	- Padrão de CMD para ativar/iniciar/restart serviços: $ sudo sytemctl enable mysqld		
+	
+		- systemctl: comando do SO 
+		- enable: Habilitar 
+		- mysqld: Serviço daemon para rodar em background
+	
+	- Download Java JDK 8 (Remover OpenJDK caso exista antes de instalar o JDK 8);
+	- extrair o download e mover para o diretório /opt/jdk
+	
+	- Download MySQL - Ativar Serviço;
+				
+	- Realizar configurações de variáveis de ambientes (.bashrc) e dar um source;
+			# JDK
+				export JAVA_HOME=/opt/jdk
+				export PATH=$PATH:$JAVA_HOME/bin
+
+			# Hadoop
+				export HADOOP_HOME=/opt/hadoop
+				export HADOOP_INSTALL=$HADOOP_HOME
+				export HADOOP_COMMON_HOME=$HADOOP_HOME
+				export HADOOP_MAPRED_HOME=$HADOOP_HOME
+				export HADOOP_HDFS_HOME=$HADOOP_HOME
+				export YARN_HOME=$HADOOP_HOME
+				export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+				
+	- Adicionar o usuário dentro do diretório /etc/sudoers para permitir executar operações como $ sudo <cmd>
+	
+	- Download SSH;
+	- Liberar port 22 do SSH no diretório: /etc/ssh/sshd_config e reiniciar o serviço;
+	- Configurar SSH sem Senha para realizar a comunicação segura entre o cluster;
+		- ssh-keygen -t rsa (Criptografia rsa)
+		- Chave privada fica no NameNode e chave publica nos DataNode
+	
+	- Download Hadoop;
+	- extrair o download : tar -xvf <nome_arquivo>
+	- mover o diretório para o diretório /opt/hadoop
+	
+	
+	- listar todos arquivos do diretório: ls -la
+	
+	https://hadoop.apache.org/docs/r3.2.0/hadoop-project-dist/hadoop-common/SingleCluster.html
+	http://hadoopecosystemtable.github.io/
+	https://archive.apache.org/dist/zookeeper/
+
+	- TODO ARQUIVO SALVO NO HDFS, DEVE SER COPIADO PARA O SISTEMA OPERACIONAL PARA PODER SER ABERTO E LIDO;
+	
+	ResourceManager YARN: localhost:8088
+	HDFS: localhost:9870
+	Hadoop: localhost:50070
+
+	- CONFIGURAÇÃO HADOOP
+		- core-site.xml
+			<configuration>
+				<property>
+					<name>fs.defaultFS</name>
+					<value>hdfs://localhost:9000</value>
+				</property>
+			</configuration>
+
+		- hdfs-site.xml
+			<configuration>
+				<property>
+					<name>dfs.replication</name>
+					<value>1</value>
+				</property>
+			</configuration>
+	
+		- A configuração completa do Hadoop pode ser encontrada:
+			https://hadoop.apache.org/docs/r3.2.0/hadoop-project-dist/hadoop-common/SingleCluster.html
+	
+	- CONFIGURAÇÃO ZOOKEEPER
+	
+		- Download Zookeeper:  https://archive.apache.org/dist/zookeeper/
+		
+		- Extrair o arquivo com : tar -xvf 
+		- Mover o arquivo para: /opt/zookeeper
+		- criar o diretório /data dentro de /opt/zookeeper
+		- Realizar a copia do template_zoo.cfg e configurar o diretório datadir como: /opt/zookeeper/data
+		- Configurar variavel de ambiente (bashrc) e dar um source para reiniciar:
+				# ZooKeeper
+				export ZOOKEEPER_HOME=/opt/zookeeper
+				export PATH=$PATH:$ZOOKEEPER_HOME/bin
+
+	- CONFIGURAÇÃO HBASE:
+	
+		- Download: https://archive.apache.org/dist/hbase/2.2.0/
+		
+		- Extrair o arquivo com : tar -xvf 
+		- Mover o arquivo para: /opt/hbase
+		- criar o diretório /hfiles dentro de /opt/hbase (que é onde ficaram os arquivos da base de dados)
+		- Editar as configurações do Hbase do arquivo: hbase-env.sh dentro do diretório: /opt/hbase/conf e configura o diretório do JAVA_HOME
+		- Editar as configurações do Hbase do arquivo: hbase-site.xml
+			<configuration>
+			 <property>
+			  <name>hbase.rootdir<name>
+			  <value>file:///opt/hbase/hfiles</value>
+			 </property>
+
+			 <property>
+			  <name>hbase.zookeeper.property.dataDir<name>
+			  <value>/opt/zookeeper/data</value>
+			 </property>
+			</configuration>
+		
+			- Diretório root do Hbase;
+			- Diretório de dados do zookeeper pois o Hbase utiliza ele para gerenciar o cluster;
+		
+			- Configurar variavel de ambiente (bashrc) e dar um source para reiniciar:
+				# HBase
+				export HBASE_HOME=/opt/hbase
+				export PATH=$PATH:$HBASE_HOME/bin
+		
+	- CONFIGURAÇÃO HIVE (Utilizar Hive versão 3):
+	
+		- http://hive.apache.org/
+		- Download: http://apache.forsale.plus/hive/
+		- Archive Downloads: https://archive.apache.org/dist/hive/hive-3.1.1/
+	
+		- Extrair o arquivo com : tar -xvf 
+		- Mover o arquivo para: sudo mv ...  /opt/hive  
+		- Realizar a copia do hive-env.sh.template e hive-default.xml.template que se encontra dentro de /opt/hive/conf e configurar o arquivo.
+		- Alterar o arquivo hive-env.sh criado configurando o diretório do HADOOP_HOME como /opt/hadoop e HIVE_CONF_DIR como /opt/hive/conf
+		- Alterar o arquivo hive-default.xml e adicionar a seguinte propriedade:
+
+			<property>
+				<name>hive.metastore.event.db.notification.api.auth</name>
+				<value>false</value>
+				<description>Should metastore do authorization against database notification related APIs such as get_next_notification. If set to true, then only the superusers in proxy settings have the permission. </description>
+			</property>
+			
+		  Com essa configuração qualquer usuário poderá se autenticar no HIVE, não somente usuários SUDO.
+		
+		- Criar um diretório dentro do HDFS : /user/hive 
+		e dentro do diretório hive criar: /warehouse
+			$ hdfs dfs -mkdir /user/hive
+			$ hdfs dfs -mkdir /user/hive/warehouse
+						
+		- Configurar variavel de ambiente (bashrc) e dar um source para reiniciar:
+			# Hive
+			export HIVE_HOME=/opt/hive
+			export PATH=$PATH:$HIVE_HOME/bin
+			export CLASSPATH=$CLASSPATH:$HADOOP_HOME/lib/*:.
+			export CLASSPATH=$CLASSPATH:$HIVE_HOME/lib/*:.
+
+		- Para versões do HADOOP > 3.2.0, deve-se copiar o arquivo guava-XXX.jar da pasta $HOME_HADOOP/share/hadoop/common/lib para $HOME_HIVE/lib  e renomear o antigo arquivo existente dentro $HOME_HIVE/lib
+
+			$ cp guava-XXX.jar /opt/hive/lib/
+			$ mv guava-19.0.jar guava-19.0.jar.old
+			
+			- Necessário pois cada path possui uma versão, deixando os 2 paths com a mesma versão resolve o problema.
+			
+		- Inicializar o Schema do Hive (Cria um bd relacional derby e toda sua estrutura para ser utilizado pelo HIVE)
+			$ schematool -initSchema -dbType derby
+
+	- CONFIGURAÇÃO PIG:
+		
+		- Download: https://mirror.nbtelecom.com.br/apache/pig/pig-0.17.0/
+
+		- Extrair o arquivo com : tar -xvf 
+		- Mover o arquivo para: sudo mv ...  /opt/pig
+		- Pig não tem arquivos de configurações, necessário somente configurar variáveis de ambiente:
+			# Pig
+			export PIG_HOME=/opt/pig
+			export PATH=$PATH:PIG_HOME/bin
+			export PIG_CLASSPATH=$HADOOP_HOME/conf
+	
+	- CONFIGURAÇÃO SPARK:
+		- Download: https://archive.apache.org/dist/spark/spark-2.4.3/
+		
+		- Extrair o arquivo com : tar -xvf 
+		- Mover o arquivo para: sudo mv ...  /opt/spark
+		- Configurar variavel de ambiente
+			# Spark
+			export SPARK_HOME=/opt/spark
+			export PATH=$PATH:$SPARK_HOME/bin
+
+	- CONFIGURAÇÃO SQOOP (utilizar Sqoop 1):
+		- Download: http://ftp.unicamp.br/pub/apache/sqoop/1.4.7/
+		
+		- Extrair o arquivo com : tar -xvf 
+		- Mover o arquivo para: sudo mv ...  /opt/sqoop
+		- Criar 2 diretórios (accumulo e hcatalog) dentro de /opt/sqoop  . Necessário para evitar um Warning durante a inicialização do SQOOP;
+		- Realizar a cópia do arquivo sqoop-env-template.sh 
+			$ cp sqoop-env-template.sh sqoop-env.sh
+		
+		- Verificar Versão: $ scoop version
+		
+		- Configurar o arquivo sqoop-env.sh
+			#Set path to where bin/hadoop is available
+			export HADOOP_COMMON_HOME=/opt/hadoop
+
+			#Set path to where hadoop-*-core.jar is available
+			export HADOOP_MAPRED_HOME=/opt/hadoop
+
+			#set the path to where bin/hbase is available
+			export HBASE_HOME=/opt/hbase
+
+			#Set the path to where bin/hive is available
+			export HIVE_HOME=/opt/hive
+
+			#Set the path for where zookeper config dir is
+			export ZOOCFGDIR=/opt/zookeeper/conf
+		
+		- Configurar variaveis de ambiente:
+			# Sqoop
+			export SQOOP_HOME=/opt/sqoop
+			export PATH=$PATH:$SQOOP_HOME/bin
+			export HCAT_HOME=/opt/sqoop/hcatalog
+			export ACCUMULO_HOME=/opt/sqoop/accumulo
+		
+	- CONFIGURAÇÃO FLUME:
+		- Download: http://www.apache.org/dyn/closer.lua/flume/1.9.0/apache-flume-1.9.0-bin.tar.gz
+
+		- Extrair o arquivo com : tar -xvf 
+		- Mover o arquivo para: sudo mv ...  /opt/flume
+		- realizar a copia do arquivo flume-env.sh.template
+			$ cp flume-env.sh.template flume-env.sh
+		- Configurar o arquivo flume-env.sh
+			export JAVA_HOME=/opt/jdk
+		
+		- COnfigura variaveis de ambiente
+			# Flume
+			export FLUME_HOME=/opt/flume
+			export PATH=$PATH:$FLUME_HOME/bin
+	
+	
+	- START NOS SERVIÇOS 
+		- HADOOP:
+			- start-dfs.sh
+			- stop-dfs.sh
+		- YARN:
+			- start-yarn.sh
+			- stop-yarn.sh
+		- ZOOKEEPER: (quorumPeerMain é o nome do serviço   * jps)
+			- zkServer.sh start	
+			- zkServer.sh stop
+			
+			- zkCli.sh start (inicia o Zookeeper Command Line Interface)
+		- HBASE:
+			- start-hbase.sh
+			- stop-hbase.sh
+			
+			- Ativar o Shell do Hbase:
+				- hbase shell
+	
+		- HIVE:
+			- schematool -initSchema -dbType derby
+			- hive (comando hive é utilizado para acessar a estrutra hive. Hadoop deve estar em execução)
+				- show tables; 
+	
+		- PIG:
+			- pig
+			
+			- Listar variáveis de configuração:
+				- pig -h properties
+
+		- Spark:
+			- spark-shell
+			- API Python: pyspark
+		
+		- MySQL:
+			- Start: sudo sytemctl enable mysqld
+			- Check: sudo sytemctl status mysqld
+			
+			- Shell MySQL:
+				- mysql -u root -p
+			
+	** Quando for necessário reinstalar algum aplicativo, deve-se formatar o namenode, apagar os dados de cluster id do datanode e namenode, apagar dados do zookeeper
+

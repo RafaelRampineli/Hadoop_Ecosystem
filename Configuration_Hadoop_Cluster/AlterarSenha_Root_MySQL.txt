@@ -1,0 +1,27 @@
+# Procedimento para configurar/alterar a senha do root
+
+# Para o serviço
+sudo systemctl stop mysqld
+
+# Inicializa em modo de segurança
+sudo mysqld --skip-grant-tables --user=mysql &  (& -> Coloca o serviço em background)
+
+# Abre o shell
+mysql
+
+# Reset dos privilégios
+FLUSH PRIVILEGES;
+
+# Altera a senha do root
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'dsahadoop';
+
+# Verifica as regras de senha
+SHOW VARIABLES LIKE 'validate_password%';
+
+# Ajusta a senha
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'Mysql@11';
+
+# Reinicia a máquina
+
+# Acessa o MySQL
+mysql -u root -p

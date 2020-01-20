@@ -1,0 +1,48 @@
+Laboratório 1 - Trabalhando com HDFS
+
+https://hadoop.apache.org/docs/r3.2.0/hadoop-project-dist/hadoop-hdfs/HDFSCommands.html
+
+- Iniciar os Serviços do Hadoop e Yarn
+
+- Comandos no HDFS devem iniciar com $ HDFS <command>
+
+- dfs : Sistema de Arquivo Distribuido
+
+- User Commands:
+	- Listar Conteúdo: 
+		$ hdfs dfs -ls 
+	
+	- Logs de Inicialização Hadoop: 
+		$ cd /opt/hadoop/logs
+	
+	- Formatar o HDFS e limpar os dados temporários do diretório hadoop-hadoop:
+		$ hdfs namenode -format
+		$ cd /tmp/
+		$ rm -rf *  {no diretório hadoop-hadoop}
+	
+	- Criar diretório:
+		$ hdfs dfs -mkdir /user
+		$ hdfs dfs -mkdir /user/bigdata
+	
+	- Copiar arquivo para dentro do HDFS:
+		$ hdfs dfs -put {Arquivo} {Diretório destino}
+		$ hdfs dfs -put dados.txt /user/bigdata
+	
+	- Copiar arquivo do HDFS para fora:
+		$ hdfs dfs -get {arquivo} {Diretório destino}
+		$ hdfs dfs -get /user/bigdata/dados.txt /teste/
+	
+	- Browser Acess:
+		-NameNode: http://localhost:9870/
+			- NameNode Journal Status: Diretório onde os metadados do NameNode são salvos.
+					$ cd /tmp/hadoop-hadoop/dfs/name/current/
+			
+- Admin Commands:
+	- Relatório do ambiente:
+		$ hdfs dfsadmin -report
+	
+	- Colocar o NameNode em SafeMode:
+		$ hdfs dfsadmin -safemode enter
+		$ hdfs dfsadmin -safemode leave
+					
+				

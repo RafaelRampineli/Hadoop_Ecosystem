@@ -1,0 +1,32 @@
+Importando Dados para o HBase com PIG
+
+	- O diretório hbase dentro do HDFS foi criado automáticamente no momento que foi iniciar o serviço;
+
+	- Copiar o arquivo "cliente.txt":
+		- Utilizar root:
+			$ su
+			password:
+			$ cp /media/sf_mapreduce/cliente.txt /home/hadoop/cliente.txt
+			$ sudo chown hadoop:hadoop /cliente.txt
+		
+	- Copiar o arquivo do S.O. para dentro do HDFS:
+		- Criar pasta dentro do HDFS:
+			$ hdfs dfs -mkdir /user/dados
+			$ hdfs dfs -mkdir /user/dados/clientes
+		
+		$ hdfs dfs -copyFromLocal clientes.txt /user/dados/clientes
+		
+		- Listar conteudo do arquivo:
+			$ hdfs dfs -cat /user/dados/clientes/clientes.txt
+			
+	
+	- O HDFS é utilizado SOMENTE PARA ARMAZENAMENTO DISTRIBUIDO. Não é utilizado para manipulações. Para Manipular os dados utilizamos outras ferramentas como HBase, Pig, Hive...
+	
+	- Acessar o Shell do HBase:
+		$ hbase shell
+		
+		- Cria uma tabela com uma column family para receber os dados
+			$ create 'clientes', 'dados_clientes'
+			
+	- Conectar via terminal ao Apache PIG:
+		$ pig -x mapreduce
