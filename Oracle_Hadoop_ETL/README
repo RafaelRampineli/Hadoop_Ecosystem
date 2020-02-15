@@ -1,4 +1,0 @@
-# Importing Data From Oracle Database to HDFS 
-
-This project was created to display how install and configure Oracle Database using a Linux SO, and how to load data inside Oracle using
-SQL*Loader and how to make an ETL with Oracle and HDFS Hadoop using Apache Scoop.
